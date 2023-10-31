@@ -10,6 +10,7 @@ import com.tripstore.shoppingcartmicroservice.orders.domain.model.Order;
 import com.tripstore.shoppingcartmicroservice.shoppingcart.enums.ShoppingCartStatus;
 import com.tripstore.shoppingcartmicroservice.shoppingcart.domain.model.ShoppingCart;
 import com.tripstore.shoppingcartmicroservice.shoppingcart.domain.services.IShoppingCartService;
+import com.tripstore.shoppingcartmicroservice.shoppingcart.exception.InvalidCreateResourceException;
 import com.tripstore.shoppingcartmicroservice.shoppingcart.mapping.ShoppingCartMapper;
 import com.tripstore.shoppingcartmicroservice.shoppingcart.resources.CreateShoppingCartResource;
 import com.tripstore.shoppingcartmicroservice.shoppingcart.resources.ShoppingCartResource;
@@ -127,10 +128,10 @@ public class ShoppingCartsController extends CrudController<ShoppingCart, Long, 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ShoppingCartResource> createShoppingCart(@Valid @RequestBody CreateShoppingCartResource createShoppingCartResource, BindingResult result) {
         if(result.hasErrors())
-            throw new CreateResourceValidationException(getErrorsFromResult(result));
+            throw new InvalidCreateResourceException(getErrorsFromResult(result));
         Optional<Order> order = getOrderFromId(createShoppingCartResource.getOrderId());
         if(order.isEmpty())
-            throw new CreateResourceValidationException("Invalid order id or order service is down");
+            throw new InvalidCreateResourceException("Invalid order id or order service is down");
 
         ShoppingCart shoppingCart = fromCreateResourceToModel(createShoppingCartResource);
         shoppingCart.setCreatedAt(LocalDateTime.now());
