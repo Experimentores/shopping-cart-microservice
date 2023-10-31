@@ -1,4 +1,4 @@
-package com.tripstore.shoppingcartmicroservice.model;
+package com.tripstore.shoppingcartmicroservice.shoppingcart.domain.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,13 +17,14 @@ import java.time.LocalDateTime;
 public class ShoppingCart {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "date_created", length = 50)
-    private LocalDateTime cartDateCreated;
+    private LocalDateTime createdAt;
 
     @Column(name = "status", length = 50)
-    private String cartStatus;
+    private String status;
 
-    private int userId;
+    @Column(name = "order_id", nullable = false)
+    private Long orderId;
 }

@@ -1,4 +1,4 @@
-package com.tripstore.shoppingcartmicroservice.exception;
+package com.tripstore.shoppingcartmicroservice.shoppingcart.exception;
 
 public class ValidationException extends RuntimeException{
     public ValidationException() {

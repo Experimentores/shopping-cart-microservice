@@ -1,4 +1,4 @@
-package com.tripstore.shoppingcartmicroservice.exception;
+package com.tripstore.shoppingcartmicroservice.shoppingcart.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

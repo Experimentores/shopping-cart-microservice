@@ -1,4 +1,4 @@
-package com.tripstore.shoppingcartmicroservice.exception;
+package com.tripstore.shoppingcartmicroservice.shoppingcart.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
