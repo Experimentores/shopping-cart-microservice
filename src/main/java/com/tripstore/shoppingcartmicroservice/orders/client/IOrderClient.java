@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "orders-service")
+@FeignClient(name="${tripstore.orders-service.name}",
+        path = "${tripstore.orders-service.path}")
 public interface IOrderClient {
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Order> getOrderById(@PathVariable Long id, @RequestParam(required = false) String getShoppingCart);
+    ResponseEntity<Order> getOrderById(@PathVariable Long id);
 }

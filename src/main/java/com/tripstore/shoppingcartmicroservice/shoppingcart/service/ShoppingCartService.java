@@ -7,6 +7,7 @@ import com.tripstore.shoppingcartmicroservice.shoppingcart.persistence.repositor
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShoppingCartService extends CrudService<ShoppingCart, Long> implements IShoppingCartService {
@@ -17,12 +18,12 @@ public class ShoppingCartService extends CrudService<ShoppingCart, Long> impleme
     }
 
     @Override
-    public List<ShoppingCart> deleteShoppingCartsByOrderId(Long orderId) {
-        return shoppingCartRepository.deleteShoppingCartsByOrderId(orderId);
+    public Optional<ShoppingCart> deleteShoppingCartByOrderId(Long orderId) {
+        return shoppingCartRepository.deleteShoppingCartByOrderId(orderId);
     }
 
     @Override
-    public List<ShoppingCart> findShoppingCartsByOrderId(Long orderId) {
-        return shoppingCartRepository.findShoppingCartsByOrderId(orderId);
+    public Optional<ShoppingCart> findShoppingCartByOrderId(Long orderId) {
+        return shoppingCartRepository.findShoppingCartByOrderId(orderId);
     }
 }

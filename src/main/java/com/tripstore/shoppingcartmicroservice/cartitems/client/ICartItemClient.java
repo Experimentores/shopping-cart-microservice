@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name="cart-items-service")
+@FeignClient(name="${tripstore.cart-items-service.name}",
+        path = "${tripstore.cart-items-service.path}")
 public interface ICartItemClient {
 
     @GetMapping(value = "shopping-carts/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

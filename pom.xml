@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2022.0.4</spring-cloud.version>
+		<crud-jpa.repo>https://raw.githubusercontent.com/Yoimer-Davila/crud-jpa/master/repository</crud-jpa.repo>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -105,7 +106,7 @@
 	<repositories>
 		<repository>
 			<id>my-repository</id>
-			<url>file://${basedir}/lib</url>
+			<url>${crud-jpa.repo}</url>
 		</repository>
 	</repositories>
 
@@ -145,7 +146,7 @@
 						<inherited>false</inherited>
 						<phase>validate</phase>
 						<configuration>
-							<file>${pom.basedir}/lib/com/crudjpa/crud-jpa/1.0/crud-jpa-1.0.jar</file>
+							<file>${crud-jpa.repo}/com/crudjpa/crud-jpa/1.0/crud-jpa-1.0.jar</file>
 							<groupId>com.crudjpa</groupId>
 							<artifactId>crud-jpa</artifactId>
 							<version>1.0</version>
