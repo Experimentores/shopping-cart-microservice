@@ -1,7 +1,6 @@
 package com.tripstore.shoppingcartmicroservice.shoppingcart.resources;
 
 import com.tripstore.shoppingcartmicroservice.cartitems.domain.model.CartItem;
-import com.tripstore.shoppingcartmicroservice.orders.domain.model.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,6 @@ public class ShoppingCartResource {
     private Long id;
     private LocalDateTime createdAt;
     private String status;
-
     private List<CartItem> items;
-    private Order order;
+    private Long orderId;
 }

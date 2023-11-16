@@ -1,5 +1,6 @@
 package com.tripstore.shoppingcartmicroservice.cartitems.client;
 
+import com.crudjpa.client.IHealthClient;
 import com.tripstore.shoppingcartmicroservice.cartitems.domain.model.CartItem;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @FeignClient(name="${tripstore.cart-items-service.name}",
         path = "${tripstore.cart-items-service.path}")
-public interface ICartItemClient {
+public interface ICartItemClient extends IHealthClient {
 
     @GetMapping(value = "shopping-carts/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<CartItem>> getByShoppingCartId(@PathVariable Long id);

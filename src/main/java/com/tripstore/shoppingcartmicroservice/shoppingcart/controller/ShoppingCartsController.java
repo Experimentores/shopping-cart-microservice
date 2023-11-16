@@ -2,10 +2,10 @@ package com.tripstore.shoppingcartmicroservice.shoppingcart.controller;
 
 import com.crudjpa.controller.CrudController;
 import com.crudjpa.enums.MapFrom;
+import com.crudjpa.util.HttpStatusCheckCode;
 import com.tripstore.shoppingcartmicroservice.cartitems.client.ICartItemClient;
 import com.tripstore.shoppingcartmicroservice.cartitems.domain.model.CartItem;
 import com.tripstore.shoppingcartmicroservice.orders.client.IOrderClient;
-import com.tripstore.shoppingcartmicroservice.orders.domain.model.Order;
 import com.tripstore.shoppingcartmicroservice.shoppingcart.domain.model.ShoppingCart;
 import com.tripstore.shoppingcartmicroservice.shoppingcart.domain.services.IShoppingCartService;
 import com.tripstore.shoppingcartmicroservice.shoppingcart.enums.ShoppingCartStatus;
@@ -15,7 +15,6 @@ import com.tripstore.shoppingcartmicroservice.shoppingcart.resources.CreateShopp
 import com.tripstore.shoppingcartmicroservice.shoppingcart.resources.ShoppingCartResource;
 import com.tripstore.shoppingcartmicroservice.shoppingcart.resources.UpdateShoppingCartResource;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -41,7 +40,7 @@ public class ShoppingCartsController extends CrudController<ShoppingCart, Long, 
 
     @Override
     protected boolean isValidCreateResource(CreateShoppingCartResource createShoppingCartResource) {
-        Optional<Order> order = getOrderFromId(createShoppingCartResource.getOrderId());
+        Optional<?> order = getOrderFromId(createShoppingCartResource.getOrderId());
         if(order.isEmpty())
             throw new InvalidCreateResourceException("Invalid order id or order service is down");
 
@@ -66,22 +65,19 @@ public class ShoppingCartsController extends CrudController<ShoppingCart, Long, 
     @Override
     protected ShoppingCartResource fromModelToResource(ShoppingCart shoppingCart, MapFrom from) {
         ShoppingCartResource resource = mapper.fromModelToResource(shoppingCart);
-        resource.setOrder(null);
         if(from != MapFrom.ANY) {
             if(from != MapFrom.CREATE) {
                 resource.setItems(getCartItemsOfShoppingCart(shoppingCart.getId()));
             }
-            Optional<Order> order = getOrderFromId(shoppingCart.getOrderId());
-            order.ifPresent(resource::setOrder);
         }
 
         return resource;
     }
 
-    private Optional<Order> getOrderFromId(Long orderId){
+    private Optional<?> getOrderFromId(Long orderId){
         try {
-            ResponseEntity<Order> response = orderClient.getOrderById(orderId);
-            return response.getStatusCode() == HttpStatus.OK ? Optional.ofNullable(response.getBody()) : Optional.empty();
+            ResponseEntity<?> response = orderClient.getOrderById(orderId);
+            return HttpStatusCheckCode.from(response).isOk() ? Optional.ofNullable(response.getBody()) : Optional.empty();
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -90,7 +86,7 @@ public class ShoppingCartsController extends CrudController<ShoppingCart, Long, 
     private List<CartItem> getCartItemsOfShoppingCart(Long shoppingCaryId) {
         try {
             ResponseEntity<List<CartItem>> response = cartItemClient.getByShoppingCartId(shoppingCaryId);
-            return response.getStatusCode() == HttpStatus.OK ? response.getBody() : List.of();
+            return HttpStatusCheckCode.from(response).isOk() ? response.getBody() : List.of();
         } catch (Exception e) {
             return List.of();
         }
@@ -98,7 +94,6 @@ public class ShoppingCartsController extends CrudController<ShoppingCart, Long, 
 
     private ShoppingCartResource getShoppingCartOrderResource(ShoppingCart shoppingCart){
         ShoppingCartResource resource = mapper.fromModelToResource(shoppingCart);
-        resource.setOrder(null);
         resource.setItems(getCartItemsOfShoppingCart(shoppingCart.getId()));
         return resource;
     }
@@ -121,10 +116,16 @@ public class ShoppingCartsController extends CrudController<ShoppingCart, Long, 
         return insert(createShoppingCartResource);
     }
 
+    private void validateCartItemsClient() {
+        validateHealthClient(cartItemClient, "CartItems");
+    }
+
     @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ShoppingCartResource> deleteShoppingCartById(@PathVariable Long id) {
+        validateCartItemsClient();
+
         ResponseEntity<ShoppingCartResource> response = delete(id);
-        if(response.getStatusCode() == HttpStatus.OK)
+        if(HttpStatusCheckCode.from(response).isOk())
             cartItemClient.deleteByShoppingCartId(id);
 
         return response;
@@ -139,10 +140,16 @@ public class ShoppingCartsController extends CrudController<ShoppingCart, Long, 
 
     @DeleteMapping(value = "orders/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     private ResponseEntity<ShoppingCartResource> deleteShoppingCartByOrderId(@PathVariable Long id) {
+        validateCartItemsClient();
+
         Optional<ShoppingCart> shoppingCart = shoppingCartService.deleteShoppingCartByOrderId(id);
 
         return shoppingCart.map(cart -> ResponseEntity.ok(getShoppingCartOrderResource(cart)))
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
+    @RequestMapping(value = "healthcheck", method = RequestMethod.HEAD)
+    ResponseEntity<Void> isOk() {
+        return ResponseEntity.ok().build();
+    }
 }
