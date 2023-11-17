@@ -5,19 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+@AllArgsConstructor
+public class ProductCategory {
     private Long id;
     private String name;
-
-    private String description;
-
-    private Double price;
-
-    private String imageUrl;
-
-    private Double rating;
-
-    private ProductCategory category;
 }
